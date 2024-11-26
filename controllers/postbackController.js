@@ -9,12 +9,12 @@ const handlePostback = async (req, res) => {
   }
 
   try {
-    console.log('Received tid:', tid);
+    console.log('Received tid:', tid); // Ensure tid is received correctly
 
-    // Find the click record and include the associated campaign
+    // Correctly query using the received tid
     const click = await Click.findOne({
       where: { click_id: tid },
-      include: Campaign, // Fetch campaign data
+      include: Campaign,
     });
 
     if (!click) {
@@ -30,29 +30,20 @@ const handlePostback = async (req, res) => {
 
     const coins = campaign.coins;
 
-    // Locate the user's wallet
     let wallet = await Wallet.findOne({ where: { user_id } });
 
-    // If no wallet exists, create one
     if (!wallet) {
       wallet = await Wallet.create({ user_id, coins: 0 });
     }
 
-    // Update the wallet with the campaign coins
     wallet.coins += coins;
     await wallet.save();
 
     console.log(`Wallet updated for user ${user_id}: +${coins} coins from campaign ${campaign_id}`);
 
-    // Fire postback to the given URL with tid as a parameter
     const postbackUrl = `http://paychat.fuse-cloud.com/pb?tid=${encodeURIComponent(tid)}`;
-
-    try {
-      const response = await axios.get(postbackUrl);
-      console.log("Postback fired: ", response.data);
-    } catch (error) {
-      console.error("Error firing postback: ", error);
-    }
+    const response = await axios.get(postbackUrl);
+    console.log("Postback fired: ", response.data);
 
     return res.status(200).json({
       status: 'success',
@@ -65,6 +56,7 @@ const handlePostback = async (req, res) => {
     return res.status(500).json({ status: 'failure', message: 'Internal server error' });
   }
 };
+
 
 
 module.exports = { handlePostback };
