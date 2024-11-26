@@ -2,21 +2,25 @@ const axios = require('axios');
 const { Wallet, Click, Campaign } = require('../models');
 
 const handlePostback = async (req, res) => {
-  const { tid } = req.query; // Extract tid from the frontend request
+  const { tid } = req.query;
 
   if (!tid) {
     return res.status(400).json({ status: 'failure', message: 'Missing tid parameter' });
   }
 
   try {
+    console.log('Received tid:', tid);
+
     // Find the click record and include the associated campaign
-    const click = await Click.findOne({ where: { click_id: tid }, include: Campaign });
+    const click = await Click.findOne({
+      where: { click_id: tid },
+      include: Campaign, // Fetch campaign data
+    });
 
     if (!click) {
       return res.status(404).json({ status: 'failure', message: 'Click ID not found' });
     }
 
-    // Extract the user ID and campaign details
     const { user_id, campaign_id } = click;
     const campaign = click.Campaign;
 
@@ -24,7 +28,7 @@ const handlePostback = async (req, res) => {
       return res.status(404).json({ status: 'failure', message: 'Campaign not found' });
     }
 
-    const coins = campaign.coins; // Get the coins value from the campaign
+    const coins = campaign.coins;
 
     // Locate the user's wallet
     let wallet = await Wallet.findOne({ where: { user_id } });
@@ -57,9 +61,10 @@ const handlePostback = async (req, res) => {
       campaign: { id: campaign_id, title: campaign.title, coins },
     });
   } catch (error) {
-    console.error(error);
+    console.error('Error processing postback:', error);
     return res.status(500).json({ status: 'failure', message: 'Internal server error' });
   }
 };
+
 
 module.exports = { handlePostback };
