@@ -6,7 +6,7 @@ const app = express();
 
 // CORS Configuration
 const corsOptions = {
-  origin: 'https://growwpaisa.com', // You can replace '*' with your frontend domain if needed
+  origin: '*', // You can replace '*' with your frontend domain if needed
   methods: 'GET, POST, PUT, DELETE',
   allowedHeaders: 'Content-Type, Authorization',
 };
