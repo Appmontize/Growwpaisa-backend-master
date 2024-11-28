@@ -2,18 +2,16 @@ const axios = require('axios');
 const { Wallet, Click, Campaign } = require('../models');
 
 const handlePostback = async (req, res) => {
-  let { tid } = req.query; // Extract aff_click_id (tid) from the query
+  let { tid } = req.query;
 
   if (!tid) {
     return res.status(400).json({ status: 'failure', message: 'Missing aff_click_id parameter' });
   }
 
   try {
-    // Clean the aff_click_id to remove unwanted characters
-    tid = tid.replace(/^\$/, ''); // Remove the leading "$" if present
     console.log(`Processing postback for aff_click_id: ${tid}`);
 
-    // Fetch the Click record using aff_click_id
+    // Fetch the Click record
     const click = await Click.findOne({
       where: { click_id: tid },
       include: Campaign,
@@ -32,19 +30,20 @@ const handlePostback = async (req, res) => {
 
     const coins = campaign.coins;
 
-    // Check if the postback has already been processed
-    if (click.processed) {
-      return res.status(200).json({
-        status: 'success',
-        message: 'Postback already processed for this click.',
-      });
+    // Check if the user exists in the `users` table
+    const userExists = await User.findOne({ where: { user_id } });
+    if (!userExists) {
+      return res.status(404).json({ status: 'failure', message: 'User not found in the database' });
     }
 
-    // Update the user's wallet
+    // Check if the wallet exists
     let wallet = await Wallet.findOne({ where: { user_id } });
     if (!wallet) {
+      // Create a new wallet for the user
       wallet = await Wallet.create({ user_id, coins: 0 });
     }
+
+    // Update the wallet
     wallet.coins += coins;
     await wallet.save();
 
@@ -63,6 +62,7 @@ const handlePostback = async (req, res) => {
     return res.status(500).json({ status: 'failure', message: 'Internal server error' });
   }
 };
+
 
 
 module.exports = { handlePostback };
