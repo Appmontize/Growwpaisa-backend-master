@@ -3,32 +3,29 @@ module.exports = (sequelize, DataTypes) => {
   const Wallet = sequelize.define('Wallet', {
     wallet_id: {
       type: DataTypes.INTEGER,
+      primaryKey: true,
       autoIncrement: true,
-      primaryKey: true
     },
     user_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'Users', // Name of the table, not the model
+        key: 'user_id',
+      },
     },
     coins: {
       type: DataTypes.INTEGER,
-      defaultValue: 0
+      defaultValue: 0,
     },
     created_at: {
       type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
-    }
+      defaultValue: DataTypes.NOW,
+    },
   }, {
+    tableName: 'Wallets',
     timestamps: false,
-    tableName: 'Wallets' 
   });
-
-  Wallet.associate = (models) => {
-    // Define inverse association with User
-    Wallet.belongsTo(models.User, {
-      foreignKey: 'user_id'
-    });
-  };
 
   return Wallet;
 };
