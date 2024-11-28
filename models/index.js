@@ -11,7 +11,6 @@ const Campaign = require('./campaignModel')(sequelize, Sequelize.DataTypes);
 User.hasOne(Wallet, { foreignKey: 'user_id', onDelete: 'CASCADE' });
 Wallet.belongsTo(User, { foreignKey: 'user_id', onDelete: 'CASCADE' });
 
-// Add the association between Click and Campaign
 Campaign.hasMany(Click, { foreignKey: 'campaign_id', onDelete: 'CASCADE' });
 Click.belongsTo(Campaign, { foreignKey: 'campaign_id', onDelete: 'CASCADE' });
 
@@ -20,5 +19,5 @@ module.exports = {
   Campaign,
   Wallet,
   sequelize,
-  Click
+  Click,
 };

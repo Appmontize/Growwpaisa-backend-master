@@ -1,29 +1,33 @@
-// models/click.js
 module.exports = (sequelize, DataTypes) => {
-  const Click = sequelize.define('Click', {
-    click_id: {
-      type: DataTypes.STRING,
-      primaryKey: true,
-    },
-    user_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    campaign_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'campaigns', // This is the table name
-        key: 'id',
+  const Click = sequelize.define(
+    'Click',
+    {
+      click_id: {
+        type: DataTypes.STRING,
+        primaryKey: true,
+      },
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      campaign_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'campaigns', // This is the table name
+          key: 'id',
+        },
+      },
+      created_at: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
       },
     },
-    created_at: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
-  }, {
-    timestamps: false,
-  });
+    {
+      timestamps: false,
+      tableName: 'clicks', // Ensure this matches your table name
+    }
+  );
 
   Click.associate = (models) => {
     Click.belongsTo(models.Campaign, {
