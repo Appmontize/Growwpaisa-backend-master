@@ -1,6 +1,3 @@
-const axios = require('axios');
-const { Wallet, Click, Campaign } = require('../models');
-
 const handlePostback = async (req, res) => {
   let { tid } = req.query;
 
@@ -9,6 +6,9 @@ const handlePostback = async (req, res) => {
   }
 
   try {
+    // Remove the `$` character if present
+    tid = tid.replace(/^\$/, '');
+
     console.log(`Processing postback for aff_click_id: ${tid}`);
 
     // Fetch the Click record
@@ -62,9 +62,3 @@ const handlePostback = async (req, res) => {
     return res.status(500).json({ status: 'failure', message: 'Internal server error' });
   }
 };
-
-
-
-module.exports = { handlePostback };
-
-
