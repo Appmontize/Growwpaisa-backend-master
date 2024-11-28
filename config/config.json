@@ -1,8 +1,8 @@
 {
     "development": {
-      "username": "paisa",
-      "password": "Loginamd@321",
-      "database": "growwpaisa",
+      "username": "root",
+      "password": "",
+      "database": "growwpaissa",
       "host": "localhost",
       "dialect": "mysql"
     }
