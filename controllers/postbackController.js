@@ -9,6 +9,9 @@ const handlePostback = async (req, res) => {
   }
 
   try {
+    // Remove the `$` character if present
+    tid = tid.replace(/^\$/, '');
+
     console.log(`Processing postback for aff_click_id: ${tid}`);
 
     // Fetch the Click record
