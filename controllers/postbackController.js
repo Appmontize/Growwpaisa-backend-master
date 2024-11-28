@@ -35,10 +35,10 @@ const handlePostback = async (req, res) => {
     const coins = campaign.coins;
 
     // Check if the user exists in the `users` table
-    const userExists = await User.findOne({ where: { user_id } });
+    let userExists = await User.findOne({ where: { user_id } });
     if (!userExists) {
-      console.error(`User ID ${user_id} not found in the database.`);
-      return res.status(404).json({ status: 'failure', message: 'User not found in the database' });
+      console.log(`User ID ${user_id} not found. Creating a placeholder user.`);
+      await User.create({ user_id, name: 'Placeholder', email: `user${user_id}@example.com`, password_hash: 'placeholder', created_at: new Date() });
     }
 
     // Check if the wallet exists
