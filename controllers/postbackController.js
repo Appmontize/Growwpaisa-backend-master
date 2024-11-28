@@ -1,7 +1,6 @@
 const axios = require('axios');
 const { Wallet, Click, Campaign } = require('../models');
 
-const { Click, Wallet, Campaign } = require('../models');
 
 const handlePostback = async (req, res) => {
   const { tid } = req.query; // Extract aff_click_id (tid) from the query
@@ -67,6 +66,3 @@ const handlePostback = async (req, res) => {
 module.exports = { handlePostback };
 
 
-
-
-module.exports = { handlePostback };
