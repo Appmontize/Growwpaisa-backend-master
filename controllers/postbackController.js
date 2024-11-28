@@ -1,5 +1,4 @@
-const axios = require('axios');
-const { Wallet, Click, Campaign } = require('../models');
+const { Wallet, Click, Campaign, User } = require('../models');
 
 const handlePostback = async (req, res) => {
   let { tid } = req.query;
@@ -21,6 +20,7 @@ const handlePostback = async (req, res) => {
     });
 
     if (!click) {
+      console.error(`Click ID ${tid} not found in the database.`);
       return res.status(404).json({ status: 'failure', message: 'Click ID not found' });
     }
 
@@ -28,6 +28,7 @@ const handlePostback = async (req, res) => {
     const campaign = click.Campaign;
 
     if (!campaign) {
+      console.error(`Campaign ID ${campaign_id} not found for Click ID ${tid}.`);
       return res.status(404).json({ status: 'failure', message: 'Campaign not found' });
     }
 
@@ -36,13 +37,14 @@ const handlePostback = async (req, res) => {
     // Check if the user exists in the `users` table
     const userExists = await User.findOne({ where: { user_id } });
     if (!userExists) {
+      console.error(`User ID ${user_id} not found in the database.`);
       return res.status(404).json({ status: 'failure', message: 'User not found in the database' });
     }
 
     // Check if the wallet exists
     let wallet = await Wallet.findOne({ where: { user_id } });
     if (!wallet) {
-      // Create a new wallet for the user
+      console.log(`Wallet for User ID ${user_id} not found. Creating a new wallet.`);
       wallet = await Wallet.create({ user_id, coins: 0 });
     }
 
@@ -54,7 +56,7 @@ const handlePostback = async (req, res) => {
     click.processed = true;
     await click.save();
 
-    console.log(`Wallet updated for user ${user_id}: +${coins} coins from campaign ${campaign_id}`);
+    console.log(`Wallet updated for User ID ${user_id}: +${coins} coins from Campaign ID ${campaign_id}`);
 
     return res.status(200).json({
       status: 'success',
@@ -66,8 +68,4 @@ const handlePostback = async (req, res) => {
   }
 };
 
-
-
 module.exports = { handlePostback };
-
-
