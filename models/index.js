@@ -1,3 +1,4 @@
+// models/index.js
 const Sequelize = require('sequelize');
 const config = require('../config/config.json').development;
 
@@ -18,6 +19,6 @@ module.exports = {
   User,
   Campaign,
   Wallet,
-  sequelize,
   Click,
+  sequelize,
 };
