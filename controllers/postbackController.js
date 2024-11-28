@@ -1,3 +1,6 @@
+const axios = require('axios');
+const { Wallet, Click, Campaign } = require('../models');
+
 const handlePostback = async (req, res) => {
   let { tid } = req.query;
 
@@ -62,3 +65,9 @@ const handlePostback = async (req, res) => {
     return res.status(500).json({ status: 'failure', message: 'Internal server error' });
   }
 };
+
+
+
+module.exports = { handlePostback };
+
+
