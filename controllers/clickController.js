@@ -9,8 +9,8 @@ const generateClickId = async (req, res) => {
   }
 
   try {
-    // Log when the endpoint is hit
-    console.log('generateClickId endpoint hit');
+    // Log the received base_url
+    console.log('Received Base URL:', base_url);
 
     // Check if a click already exists for this user and campaign
     const existingClick = await Click.findOne({ where: { user_id, campaign_id } });
@@ -21,6 +21,13 @@ const generateClickId = async (req, res) => {
         .replace('{SUB_AFFID}', 'default_sub_affid')
         .replace('{DEVICE_ID}', 'default_device_id');
 
+      // Ensure no placeholders remain
+      if (campaignUrl.includes('{AFF_CLICK_ID}') || campaignUrl.includes('{SUB_AFFID}') || campaignUrl.includes('{DEVICE_ID}')) {
+        console.error('URL replacement failed. Remaining placeholders:', campaignUrl);
+        throw new Error('URL replacement failed.');
+      }
+
+      console.log('Generated Campaign URL (Existing Click):', campaignUrl);
       return res.status(200).json({ click_id: existingClick.click_id, campaignUrl });
     }
 
@@ -40,14 +47,18 @@ const generateClickId = async (req, res) => {
       .replace('{SUB_AFFID}', 'default_sub_affid')
       .replace('{DEVICE_ID}', 'default_device_id');
 
-    console.log('Generated Campaign URL:', campaignUrl);
+    // Ensure no placeholders remain
+    if (campaignUrl.includes('{AFF_CLICK_ID}') || campaignUrl.includes('{SUB_AFFID}') || campaignUrl.includes('{DEVICE_ID}')) {
+      console.error('URL replacement failed. Remaining placeholders:', campaignUrl);
+      throw new Error('URL replacement failed.');
+    }
 
+    console.log('Generated Campaign URL (New Click):', campaignUrl);
     return res.status(201).json({ click_id, campaignUrl });
   } catch (error) {
     console.error('Error generating click ID:', error);
     return res.status(500).json({ message: 'Error generating click ID', error: error.message });
   }
 };
-
 
 module.exports = { generateClickId };
