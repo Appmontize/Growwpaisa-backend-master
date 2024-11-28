@@ -1,15 +1,16 @@
 const axios = require('axios');
 const { Wallet, Click, Campaign } = require('../models');
 
-
 const handlePostback = async (req, res) => {
-  const { tid } = req.query; // Extract aff_click_id (tid) from the query
+  let { tid } = req.query; // Extract aff_click_id (tid) from the query
 
   if (!tid) {
     return res.status(400).json({ status: 'failure', message: 'Missing aff_click_id parameter' });
   }
 
   try {
+    // Clean the aff_click_id to remove unwanted characters
+    tid = tid.replace(/^\$/, ''); // Remove the leading "$" if present
     console.log(`Processing postback for aff_click_id: ${tid}`);
 
     // Fetch the Click record using aff_click_id
@@ -31,7 +32,7 @@ const handlePostback = async (req, res) => {
 
     const coins = campaign.coins;
 
-    // Check if the postback has already been processed (optional: add a "processed" field in the Click model)
+    // Check if the postback has already been processed
     if (click.processed) {
       return res.status(200).json({
         status: 'success',
@@ -47,7 +48,7 @@ const handlePostback = async (req, res) => {
     wallet.coins += coins;
     await wallet.save();
 
-    // Mark the click as processed (if the Click model includes a "processed" field)
+    // Mark the click as processed
     click.processed = true;
     await click.save();
 
@@ -62,6 +63,7 @@ const handlePostback = async (req, res) => {
     return res.status(500).json({ status: 'failure', message: 'Internal server error' });
   }
 };
+
 
 module.exports = { handlePostback };
 
